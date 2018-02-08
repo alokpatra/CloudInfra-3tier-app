@@ -1,0 +1,14 @@
+- name: Create full infra
+  hosts: jumpbox
+  gather_facts: true
+  become: false
+  roles:
+    - provision_openstack_infra
+    # - osp-facts
+
+# - name: Create full infra
+#   hosts: jumpbox
+#   gather_facts: true
+#   become: false
+#   roles:
+#     - osp-facts

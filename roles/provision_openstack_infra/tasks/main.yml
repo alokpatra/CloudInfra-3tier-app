@@ -1,0 +1,16 @@
+- name: Create network
+  include_tasks: network.yml
+
+- name: Create key-pair
+  include_tasks: key_pair.yml
+
+- name: Create security groups
+  include_tasks: security_groups.yml
+
+- name: Create OS flavour
+  include_tasks: os_flavour.yml
+
+- name: Create instances
+  include_tasks: instance.yml
+  tags:
+    - instance

@@ -1,0 +1,48 @@
+---
+# tasks file for provision_openstack_infra
+- name: Create a network
+  os_network:
+    cloud: ospcloud
+    state: present
+    name: openstack-ext-network
+    external: true
+
+- name: Create a public subnet on the network
+  os_subnet:
+    state: present
+    network_name: openstack-ext-network
+    name: openstack-ext-subnet
+    cidr: 10.10.10.0/24
+    dns_nameservers:
+       - 8.8.8.7
+       - 8.8.8.8
+    host_routes:
+       - destination: 0.0.0.0/0
+         nexthop: 10.10.10.0
+       - destination: 192.168.0.0/24
+         nexthop: 192.168.0.0
+
+- name: Create a private/internal network
+  os_network:
+    cloud: ospcloud
+    state: present
+    name: openstack-int-network
+    external: false
+
+- name: Create a private subnet on the network
+  os_subnet:
+    state: present
+    network_name: openstack-int-network
+    name: openstack-int-subnet
+    cidr: 20.20.20.0/24
+
+- name: Create a router to connect between the private network and your internal physical network
+  os_router:
+      cloud: ospcloud
+      state: present
+      name: openstack-router
+      network: openstack-ext-network
+      external_fixed_ips:
+        - subnet: openstack-ext-subnet
+      interfaces:
+        - openstack-int-subnet
