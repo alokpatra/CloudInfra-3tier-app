@@ -4,11 +4,20 @@
   become: false
   roles:
     - provision_openstack_infra
-    # - osp-facts
 
-# - name: Create full infra
-#   hosts: jumpbox
-#   gather_facts: true
-#   become: false
-#   roles:
-#     - osp-facts
+
+- name: Collect Server facts from Openstack
+  hosts: jumpbox
+  gather_facts: true
+  become: false
+  roles:
+    - in-memory-inventory
+  tags: facts
+
+
+- name: Deploy the 3 tier application on the servers
+  hosts: jumpbox
+  gather_facts: true
+  become: false
+  roles:
+    - good-ansible-3tier-app

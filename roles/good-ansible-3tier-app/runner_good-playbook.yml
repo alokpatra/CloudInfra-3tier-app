@@ -1,0 +1,46 @@
+#Base Config
+- name: In-memory Inventory
+  hosts: all
+  gather_facts: true
+  become: true
+  roles:
+    - { role: in-memory-inventory }
+  tags:
+  - frontend
+
+
+#Base Config
+- name: Base Config
+  hosts: all
+  gather_facts: true
+  become: false
+  roles:
+    - { role: base_setup }
+
+#Setup Front End
+- name: Setup Front-end
+  hosts: frontend
+  gather_facts: true
+  become: true
+  roles:
+    - { role: frontends }
+
+
+#Setup Apps
+- name: Setup App
+  hosts: apps
+  gather_facts: false
+  become: true
+  roles:
+    - { role: apps }
+
+
+#Setup database - postgresql
+- name: Setup the Database
+  hosts: appdbs
+  gather_facts: true
+  become: true
+  roles:
+    - { role: geerlingguy.postgresql}
+  tags:
+  - frontend

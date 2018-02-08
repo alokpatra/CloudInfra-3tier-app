@@ -27,14 +27,31 @@
     state: present
     reuse: yes
     server: "{{ item.value.name }}"
-    network: ext_network
+    network: openstack-ext-network
     wait: true
     timeout: 180
   register: instancefloatingip
   with_dict: "{{osp_servers}}"
 
 - name: Show "{{ instanceip }}" public IP
-  debug: var=instancefloatingip.floating_ip.floating_ip_address
+  debug:
+    var: instancefloatingip #.floating_ip.floating_ip_address
+  ignore_errors: true
+  # tags:
+  #   - test
+
+- name: Fetch openstack sever details
+  os_server_facts:
+    cloud: ospcloud
+  register: server_results
+  tags:
+    - test
+
+- name: print server details
+  debug:
+    var: server_results
+  # tags:
+  #   - test
 
 - name: Wait for "{{ instance_name }}" to be available
   wait_for:
@@ -43,73 +60,3 @@
     search_regex: OpenSSH
     timeout: 600
   delegate_to: "{{ inventory_hostname }}"
-
-# - name: Add floating IP to Servers
-#   os_floating_ip:
-#     cloud: ospcloud
-#     state: present
-#     reuse: yes
-#     server: app1
-#     network: openstack-ext-network
-#     wait: true
-#     timeout: 180
-#     register: instancefloatingip
-#     # with_items:
-#     #   - app1
-#     #   - app2
-#     #   - db
-#     #   - frontend
-# - name: Add floating IP to Servers
-#   os_floating_ip:
-#     cloud: ospcloud
-#     state: present
-#     reuse: yes
-#     server: app1
-#     network: openstack-ext-network
-#     wait: true
-#     timeout: 180
-#     register: instancefloatingip
-#
-# - name: Add floating IP to Servers
-#   os_floating_ip:
-#     cloud: ospcloud
-#     state: present
-#     reuse: yes
-#     server: app2
-#     network: openstack-ext-network
-#     wait: true
-#     timeout: 180
-#     register: instancefloatingip
-#
-#
-# - name: Add floating IP to Servers
-#   os_floating_ip:
-#     cloud: ospcloud
-#     state: present
-#     reuse: yes
-#     server: db
-#     network: openstack-ext-network
-#     wait: true
-#     timeout: 180
-#     register: instancefloatingip
-#
-# - name: Add floating IP to Servers
-#   os_floating_ip:
-#     cloud: ospcloud
-#     state: present
-#     reuse: yes
-#     server: frontend
-#     network: openstack-ext-network
-#     wait: true
-#     timeout: 180
-#     register: instancefloatingip
-#
-# - name: Show "{{ instanceip }}" public IP
-#   debug: var=instancefloatingip.floating_ip.floating_ip_address
-# - name: Wait for "{{ instance_name }}" to be available
-#   wait_for:
-#     host: "{{ instancefloatingip.floating_ip.floating_ip_address }}"
-#     port: 22
-#     search_regex: OpenSSH
-#     timeout: 600
-#   delegate_to: "{{ inventory_hostname }}"

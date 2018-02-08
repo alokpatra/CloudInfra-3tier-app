@@ -1,5 +1,7 @@
 - name: Create network
   include_tasks: network.yml
+  tags:
+    - test
 
 - name: Create key-pair
   include_tasks: key_pair.yml
@@ -13,4 +15,4 @@
 - name: Create instances
   include_tasks: instance.yml
   tags:
-    - instance
+    - test
